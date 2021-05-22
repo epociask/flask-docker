@@ -84,14 +84,14 @@ jobs:
         task-definition: task-definition-prod.json
         container-name: prod-empociask
         image: ${{ steps.build-image-prod.outputs.image }}
-        
+
     - name: Update task definition prod
-      id: task-def-prod
+      id: task-prod-prod
       uses: aws-actions/amazon-ecs-render-task-definition@v1
       with:
         task-definition: task-definition-prod.json
         container-name: dev-empociask
-        image: ${{ steps.build-image.outputs.image }}
+        image: ${{ steps.build-image-prod.outputs.image }}
 
     - name: Deploy Amazon ECS task definition prod
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1

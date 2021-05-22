@@ -19,7 +19,7 @@ scenarios('app.feature', example_converters=dict(string=str))
 @when('the API is queried with name: "<string>"')
 def shout_response(string):
     params = {"Content-Type": "application/json"}
-    response = requests.get(DEV_URL + f"/bye?name={string}", headers=params)
+    response = requests.get(DEV_URL + f"/?name={string}", headers=params)
     return response
 
 

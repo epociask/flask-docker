@@ -1,32 +1,34 @@
 
 # coding=utf-8
 import pytest
+import os 
+import requests
 from pytest_bdd import (
-    scenario,
+    scenarios,
     then,
     when,
 )
 
+DEV_URL: str = os.getenv("DWS_DEV_URL")
+assert DEV_URL != ""
+
+scenarios('app.feature', example_converters=dict(string=str))
+
+
 @pytest.fixture
-def my_app():
-    from app import app
-    return app.test_client().get('/')
+@when('the API is queried with name: "<string>"')
+def shout_response(string):
+    params = {"Content-Type": "application/json"}
+    response = requests.get(DEV_URL + f"/bye?name={string}", headers=params)
+    return response
 
 
-@pytest.fixture()
-def get_app():
-    import app
-    return app
+@then('the response has the prefix bye with "<string>" as output')
+def shout_response_upper_cased(shout_response, string):
+    print(shout_response)
+    assert "Goodbye" in str(shout_response.content) and string in str(shout_response.content)
 
-@scenario('app.feature', 'Ensure that bye works when given request data')
-def test_ensure_that_bye_works_when_given_request_data():
-    """Ensure that the bye is working"""
 
-@when("the bye endpoint is hit with correct params")
-def the_flask_app_is_imported(get_app):
-    assert get_app != None 
-
-@then('the param is returned with bye prepended')
-def count_is_incremented_by_a_value_of_one(get_app):
-    ret_value = get_app.bye()
-    assert ret_value != None
+@then('the response status code is 200')
+def shout_response_code(shout_response):
+    assert shout_response.status_code == 200

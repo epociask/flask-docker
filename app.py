@@ -12,11 +12,10 @@ def hello():
   ENV = os.getenv('ENV')
   return f'Hello {ENV}!'
 
-@app.route('/bye', methods=['POST'])
+@app.route('/bye', methods=['GET'])
 def bye(): 
   try:
-    dict = json.loads(request.data)
-    name = dict['name']
+    name = request.args.get('name')
     return f"Goodbye {name}!"
   except Exception as e:
     print(e)

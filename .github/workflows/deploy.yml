@@ -32,10 +32,6 @@ jobs:
         pip install flake8 pytest
         pip install pytest_bdd
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-
-    - name: test w/ pytest
-      run: |
-        pytest
         
     - name: Docker build and push to dev
       id: build-image
@@ -63,7 +59,10 @@ jobs:
         service: dev-empociask
         cluster: dev-empociask
         wait-for-service-stability: true
-
+        
+    - name: Test QA
+      run: |
+        pytest test_app.py
     - name: Docker build and push to prod
       id: build-image-prod
       env:

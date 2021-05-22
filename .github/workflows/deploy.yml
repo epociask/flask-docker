@@ -64,23 +64,12 @@ jobs:
         cluster: dev-empociask
         wait-for-service-stability: true
 
-    - name: Docker build and push to prod
-      id: build-image-prod
-      env:
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: prod-empociask
-        IMAGE_TAG: ${{ github.sha }}
-      run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-        echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
-
     - name: Update task definition prod
       id: task-def-prod
       uses: aws-actions/amazon-ecs-render-task-definition@v1
       with:
         task-definition: task-definition-prod.json
-        container-name: prod-empociask
+        container-name: dev-empociask
         image: ${{ steps.build-image.outputs.image }}
 
     - name: Deploy Amazon ECS task definition prod

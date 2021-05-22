@@ -7,12 +7,7 @@ from flask import Flask
 app = Flask(__name__)
 
 
-@app.route('/')
-def hello():
-  ENV = os.getenv('ENV')
-  return f'Hello {ENV}!'
-
-@app.route('/bye', methods=['GET'])
+@app.route('/', methods=['GET'])
 def bye(): 
   try:
     name = request.args.get('name')

@@ -9,7 +9,7 @@ from pytest_bdd import (
     when,
 )
 
-DEV_URL: str = "dev-empociask-1234596866.us-west-2.elb.amazonaws.com"
+DEV_URL: str = "http://dev-empociask-1234596866.us-west-2.elb.amazonaws.com"
 assert DEV_URL != ""
 
 scenarios('app.feature', example_converters=dict(string=str))

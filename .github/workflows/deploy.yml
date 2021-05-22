@@ -2,6 +2,7 @@ on:
   push:
     branches:
       - main
+      - branch
 
 name: Deploy
 
@@ -29,7 +30,9 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install flake8 pytest
+        pip install pytest_bdd
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
     - name: test w/ pytest
       run: |
         pytest
@@ -44,6 +47,7 @@ jobs:
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
     - name: Update task definition dev
       id: task-def
       uses: aws-actions/amazon-ecs-render-task-definition@v1
@@ -55,7 +59,7 @@ jobs:
     - name: Deploy Amazon ECS task definition dev
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
       with:
-        task-definition: ${{ steps.task-def.outputs.task-definition }}
+        task-definition: task-definition.json
         service: dev-empociask
         cluster: dev-empociask
         wait-for-service-stability: true
@@ -67,9 +71,12 @@ jobs:
         ECR_REPOSITORY: prod-empociask
         IMAGE_TAG: ${{ github.sha }}
       run: |
+        cd $REQ_PATH
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+        cd $FROM_APP_BACK_TO_ROOT
+        
     - name: Update task definition prod
       id: task-def-prod
       uses: aws-actions/amazon-ecs-render-task-definition@v1
@@ -77,6 +84,13 @@ jobs:
         task-definition: task-definition-prod.json
         container-name: prod-empociask
         image: ${{ steps.build-image-prod.outputs.image }}
+    - name: Update task definition prod
+      id: task-def-prod
+      uses: aws-actions/amazon-ecs-render-task-definition@v1
+      with:
+        task-definition: task-definition-prod.json
+        container-name: dev-empociask
+        image: ${{ steps.build-image.outputs.image }}
 
     - name: Deploy Amazon ECS task definition prod
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1

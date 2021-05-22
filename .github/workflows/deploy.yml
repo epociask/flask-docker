@@ -84,6 +84,7 @@ jobs:
         task-definition: task-definition-prod.json
         container-name: prod-empociask
         image: ${{ steps.build-image-prod.outputs.image }}
+        
     - name: Update task definition prod
       id: task-def-prod
       uses: aws-actions/amazon-ecs-render-task-definition@v1

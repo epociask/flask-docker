@@ -57,7 +57,7 @@ jobs:
     - name: Deploy Amazon ECS task definition dev
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
       with:
-        task-definition: ${{ steps.task-def.outputs.task-definition }}
+        task-definition: task-definition.json
         service: dev-empociask
         cluster: dev-empociask
         wait-for-service-stability: true

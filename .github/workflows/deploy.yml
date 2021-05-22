@@ -37,7 +37,7 @@ jobs:
       id: build-image
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: dev-empociask
+        ECR_REPOSITORY: dev-empociask 
         IMAGE_TAG: ${{ github.sha }}
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
@@ -59,7 +59,7 @@ jobs:
         service: dev-empociask
         cluster: dev-empociask
         wait-for-service-stability: true
-        
+
     - name: Test QA
       run: |
         pytest test_app.py
